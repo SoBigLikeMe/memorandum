@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+ <html lang="en">
+<head>
+    <title>memo</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <script src="https://code.jquery.com/jquery-3.6.1.js"></script>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="dwz/css/login.css">
+    <script type="text/javascript">
+        function tasks() {
+            var userToken = window.localStorage.getItem('userToken');
+            $.ajax({
+                //将token放入headers
+                headers: {
+                    "Authorization": userToken //此处放置请求到的用户token
+                },
+                url: "/api/v1/tasks", //请求url
+                type: "get",
+                dataType: 'json',
+                data: {
+
+                },
+                success: (result) => {
+                    console.log(result);
+                    // $.each(result.data.item,function(index,obj){
+                    // 		$("#tasksbody").after(
+                    // 		"<td><td>"+obj['id']+"<td><td>"+
+                    //             obj['content']+"</td>"+
+                    // 		"<td>"+obj['title']+"</td><td>");
+                    // 		});
+
+                    var list = result.data.item;
+
+                    var div1 = document.getElementById("div1");
+
+                    if(result.data.total == 0){
+                        alert("无内容")
+                    }
+
+                    var rows = [];
+                    for (var i = 0; i < list.length; i++) {
+                        var str = '<tr><th>' + (i + 1) + '</th><td>' + list[i].id + '</td><td>' + list[i].title
+                            + '</td><td>' + list[i].content + '</td><td>';
+                        rows.push(str);
+
+                        div1.innerHTML = '<table class="table table-info table-striped table-hover"><thead><tr><th scope="col">#</th><th scope="col">id</th><th scope="col">title</th><th scope="col">content</th></tr></thead><tbody>'
+                            + rows.join("") + '</tbody></table>';
+                    }
+                },
+                error : function() {
+                    alert("token无效或过期");
+                }
+            })
+        }
+    </script>
+</head>
+<body>
+<div >
+    <button class="btn btn-success" onclick="tasks()">查询所有备忘录</button>
+
+    <div id="div1" style="padding: 15px;"></div>
+</div>
+</body>
+</html>

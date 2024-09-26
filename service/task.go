@@ -1,6 +1,17 @@
+// Package classification User API.
+//
+// The purpose of this service is to provide an application
+// that is using plain go code to define an API
+//
+//      Host: localhost
+//      Version: 0.0.1
+//
+// swagger:meta
+
 package service
 
 import (
+	"fmt"
 	"github.com/jinzhu/gorm"
 	logging "github.com/sirupsen/logrus"
 	"memorandum/model"
@@ -104,9 +115,9 @@ func (service *ListTasksService) List(id uint) serialzer.Response {
 	if service.Limit == 0 {
 		service.Limit = 15
 	}
-	model.DB.Model(model.Task{}).Preload("User").Where("uid = ?", id).Count(&total).
-		Limit(service.Limit).Offset((service.Start - 1) * service.Limit).
-		Find(&tasks)
+	err := model.DB.Model(model.Task{}).Preload("User").Where("uid = ?", id).Count(&total).
+		Limit(service.Limit).Offset((service.Start - 1) * service.Limit).Find(&tasks).Error
+	fmt.Printf("%v", err)
 	return serialzer.BuildListResponse(serialzer.BuildTasks(tasks), uint(total))
 }
 
